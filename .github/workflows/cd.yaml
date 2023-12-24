@@ -11,7 +11,7 @@ jobs:
       - name: Repo Checkout
         uses: actions/checkout@v4
       - name: Install sshpass
-        run: apt install sshpass
+        run: sudo apt install sshpass
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
