@@ -26,6 +26,6 @@ jobs:
           SSH_HOST: ${{ vars.SSH_HOST }}
       - name: Touch file
         env:
-          SSHPASS: ${{secrets.SSH_USER_PASS}}
+          SSHPASS: ${{secrets.SSH_USER_PASSWORD}}
         run: sshpass -e ssh prod 'touch ${{vars.BACKUP_PATH}}/test2.txt'
 
