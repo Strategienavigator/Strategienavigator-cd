@@ -1,11 +1,11 @@
 concurrency: production
-
 on:
   push:
     branches:
       - main
 jobs:
   deploy:
+    environment: production
     runs-on: ubuntu-latest
     steps:
       - name: Repo Checkout
