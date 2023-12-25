@@ -4,9 +4,25 @@ on:
     branches:
       - main
 jobs:
+
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix-environments: ${{ steps.environment-folders.outputs.matrix }}
+    steps:
+      - name: Generate matrix | Infrastructure
+        id: environment-folders
+        uses: hellofresh/action-changed-files@v3
+        with:
+          pattern: (?P<environment>[^/]+)/versions
+
   deploy:
+    needs: [ generate-matrix ]
     environment: production
     runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix-environments) }}
+    if: ${{ fromJson(needs.generate-matrix.outputs.matrix-environments).include[0] }} # skip if the matrix is empty!
     steps:
       - name: Repo Checkout
         uses: actions/checkout@v4
@@ -24,8 +40,12 @@ jobs:
         env:
           SSH_USER: ${{ vars.SSH_USER_NAME }}
           SSH_HOST: ${{ vars.SSH_HOST }}
-      - name: Touch file
-        env:
-          SSHPASS: ${{secrets.SSH_USER_PASSWORD}}
-        run: sshpass -e ssh prod 'touch ${{vars.BACKUP_PATH}}/test2.txt'
+      - name: Load .env file
+        uses: aarcangeli/load-dotenv@v1.0.0
+        with:
+         path: ${{matrix.environment}}
+         filenames: versions
+         if-file-not-found: error
+      - run: echo $
+
 
