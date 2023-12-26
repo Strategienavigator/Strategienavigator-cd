@@ -4,7 +4,6 @@ on:
     branches:
       - main
 jobs:
-
   generate-matrix:
     runs-on: ubuntu-latest
     outputs:
@@ -24,6 +23,9 @@ jobs:
       matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix-environments) }}
     if: ${{ fromJson(needs.generate-matrix.outputs.matrix-environments).include[0] }} # skip if the matrix is empty!
     steps:
+      - name: Frontend Zip Name
+        id: frontendZip
+        run: echo "::set-output name=name::frontend-build-$(date +'%Y-%m-%d-%s').zip"
       - name: Repo Checkout
         uses: actions/checkout@v4
       - name: Install sshpass
@@ -43,8 +45,50 @@ jobs:
       - name: Load .env file
         uses: aarcangeli/load-dotenv@v1.0.0
         with:
-         path: ${{matrix.environment}}
-         filenames: versions
-         if-file-not-found: error
+          path: ${{matrix.environment}}
+          filenames: versions
+          if-file-not-found: error
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.5.2
+        with:
+          node-version: 16
+      - name: clone frontend
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: 'ricom/Strategienavigator-frontend'
+          ref: ${{ envs.FRONTEND_HASH}}
+          path: 'frontend'
+      - name: build frontend
+        working-directory: frontend
+        env:
+          REACT_APP_CLIENT_ID: ${{ secrets.FRONTEND_CLIENT_ID}}
+          REACT_APP_CLIENT_SECRET: '${{ secrets.FRONTEND_CLIENT_SECRET }}'
+          REACT_APP_API: '${{ vars.BACKEND_URL }}'
+        run: |
+          npm run build
+          cd build
+          zip -r build *
+      - name: Copy Frontend to Server
+        env:
+          SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
+          BACKUPS: ${{ vars.BACKUP_PATH}}
+          FRONTEND_NAME: ${{ steps.frontendZip.outputs.name }}
+        run: |
+          sshpass -e scp frontend/build/build.zip prod:$BACKUPS/$FRONTEND_NAME
+      - name: Checkout backend hash
+        env:
+          SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
+          PUBLIC_HTML: ${{ vars.PUBLIC_HTML }}
+        run:
+          sshpass -e ssh prod 'cd $PUBLIC_HTML && git fetch && git checkout -f $BACKEND_HASH'
+
+      - name: Install frontend
+        env:
+          SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
+          PUBLIC_HTML: ${{ vars.PUBLIC_HTML }}
+          BACKUPS: ${{ vars.BACKUP_PATH}}
+          FRONTEND_NAME: ${{ steps.frontendZip.outputs.name }}
+        run:
+          sshpass -e ssh prod 'python $PUBLIC_HTML/frontend_patcher.py -s $BACKUPS/$FRONTEND_NAME -t $PUBLIC_HTML'
 
 
