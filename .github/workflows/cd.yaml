@@ -76,12 +76,12 @@ jobs:
           FRONTEND_NAME: ${{ steps.frontendZip.outputs.name }}
         run: |
           sshpass -e scp frontend/build/build.zip prod:$BACKUPS/$FRONTEND_NAME
-      - name: Checkout backend hash
+      - name: Update backend
         env:
           SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
           PUBLIC_HTML: ${{ vars.PUBLIC_HTML_PATH }}
         run:
-          sshpass -e ssh prod "cd $PUBLIC_HTML && git fetch && git checkout -f $BACKEND_HASH"
+          sshpass -e ssh prod "cd $PUBLIC_HTML && git fetch && git checkout $BACKEND_HASH && php artisan migrate --force && php artisan optimize"
 
       - name: Install frontend
         env:
@@ -91,5 +91,11 @@ jobs:
           FRONTEND_NAME: ${{ steps.frontendZip.outputs.name }}
         run:
           sshpass -e ssh prod "python3 $PUBLIC_HTML/frontend_patcher.py -s $BACKUPS/$FRONTEND_NAME -t $PUBLIC_HTML"
+      - name: Cache new views
+        env:
+          SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
+          PUBLIC_HTML: ${{ vars.PUBLIC_HTML_PATH }}
+        run:
+          sshpass -e ssh prod "cd $PUBLIC_HTML && php artisan view:cache"
 
 
