@@ -12,6 +12,13 @@ Auf keinen Fall sollte ein Branch name gewählt werden.
 
 Auch wenn nur das frontend oder backend geändert wurde, wird beides auf dem Server aktualisiert.
 
+### Fehler beim Aktualisieren
+
+Falls der Workflow beim deployen fehlschlägt, wird auf dem Server eine Datei erstellt, damit nachfolgende Jobs keine
+Änderungen mehr vornehmen.
+
+Um nachfolgende Jobs wieder möglich zu machen, muss die Datei `deploy-error` aus dem Heimverzeichnis gelöscht werden. 
+
 ## Workflow Dokumentation
 
 Der Workflow besteht aus 2 Jobs `generate-matrix` und `deploy`.
@@ -38,6 +45,8 @@ Beim Job ist das `environment: production` und `concurrency: production` eingest
 
 Hier eine kleine erklärung zu den wichtigsten Workflow Steps:
 
+- `Check for Error Marker` prüft ob auf dem Server eine Datei existiert, die erstellt wurde als ein vorheriger Job
+  fehlgeschlagen ist.
 - `Frontend Zip Name` erstellt dabei den Dateinamen der Zip Datei des Frontends. Der Name enthält das aktuelle
   Datum und die Sekunden seit 01.01.1970.
 - `Install sshpass` wird benötigt, um das passwort eines ssh users automatisch einzugeben.
@@ -49,3 +58,5 @@ Hier eine kleine erklärung zu den wichtigsten Workflow Steps:
 - `Update backend` update backend
 - `Install frontend` führt den `frontend_patcher` aus.
 - `Cache views` cached im backend die blade views.
+- `Create Error Marker` erstellt eine Datei, falls der Job fehlgeschlagen ist, um nachfolgende Jobs daran zu hindern
+  durchzulaufen.
