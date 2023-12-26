@@ -8,16 +8,16 @@ jobs:
     outputs:
       matrix-environments: ${{ steps.environment-folders.outputs.matrix }}
     steps:
-      - name: Generate matrix | Infrastructure
+      - name: Generate matrix
         id: environment-folders
         uses: hellofresh/action-changed-files@v3
         with:
           pattern: (?P<environment>[^/]+)/versions
 
   deploy:
-    concurrency: production
     needs: [ generate-matrix ]
-    environment: production
+    concurrency: production
+    environment: ${{matrix.environment}}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix-environments) }}
@@ -97,7 +97,7 @@ jobs:
           FRONTEND_NAME: ${{ steps.frontendZip.outputs.name }}
         run:
           sshpass -e ssh prod "python3 $PUBLIC_HTML/frontend_patcher.py -s $BACKUPS/$FRONTEND_NAME -t $PUBLIC_HTML"
-      - name: Cache new views
+      - name: Cache views
         env:
           SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
           PUBLIC_HTML: ${{ vars.PUBLIC_HTML_PATH }}
