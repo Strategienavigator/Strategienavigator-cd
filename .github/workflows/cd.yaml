@@ -42,22 +42,28 @@ jobs:
         env:
           SSH_USER: ${{ vars.SSH_USER_NAME }}
           SSH_HOST: ${{ vars.SSH_HOST }}
-      - name: Load .env file
+      - name: Load versions
         uses: aarcangeli/load-dotenv@v1.0.0
         with:
           path: ${{matrix.environment}}
           filenames: versions
           if-file-not-found: error
+      - name: clone backend # only used to check if the given ref exists.
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: ${{ vars.BACKEND_REPO }}
+          ref: ${{ env.BACKEND_HASH}}
+          path: 'backend'
+      - name: clone frontend
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: ${{ vars.FRONTEND_REPO }}
+          ref: ${{ env.FRONTEND_HASH}}
+          path: 'frontend'
       - name: Setup Node.js environment
         uses: actions/setup-node@v2.5.2
         with:
           node-version: 16
-      - name: clone frontend
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: 'ricom/Strategienavigator-frontend'
-          ref: ${{ env.FRONTEND_HASH}}
-          path: 'frontend'
       - name: build frontend
         working-directory: frontend
         env:
