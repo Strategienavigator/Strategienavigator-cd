@@ -65,6 +65,7 @@ jobs:
           REACT_APP_CLIENT_SECRET: '${{ secrets.FRONTEND_CLIENT_SECRET }}'
           REACT_APP_API: '${{ vars.BACKEND_URL }}'
         run: |
+          npm install
           npm run build
           cd build
           zip -r build *
