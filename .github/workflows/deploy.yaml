@@ -47,7 +47,7 @@ jobs:
         env:
           SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
         run:
-          sshpass -e ssh prod "test !-f deploy-error"
+          sshpass -e ssh prod "test ! -f deploy-error"
       - name: Load versions
         uses: aarcangeli/load-dotenv@v1.0.0
         with:
