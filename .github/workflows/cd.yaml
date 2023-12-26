@@ -1,4 +1,3 @@
-concurrency: production
 on:
   push:
     branches:
@@ -16,6 +15,7 @@ jobs:
           pattern: (?P<environment>[^/]+)/versions
 
   deploy:
+    concurrency: production
     needs: [ generate-matrix ]
     environment: production
     runs-on: ubuntu-latest
