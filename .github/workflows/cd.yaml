@@ -79,14 +79,14 @@ jobs:
       - name: Checkout backend hash
         env:
           SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
-          PUBLIC_HTML: ${{ vars.PUBLIC_HTML }}
+          PUBLIC_HTML: ${{ vars.PUBLIC_HTML_PATH }}
         run:
           sshpass -e ssh prod 'cd $PUBLIC_HTML && git fetch && git checkout -f $BACKEND_HASH'
 
       - name: Install frontend
         env:
           SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
-          PUBLIC_HTML: ${{ vars.PUBLIC_HTML }}
+          PUBLIC_HTML: ${{ vars.PUBLIC_HTML_PATH }}
           BACKUPS: ${{ vars.BACKUP_PATH}}
           FRONTEND_NAME: ${{ steps.frontendZip.outputs.name }}
         run:
