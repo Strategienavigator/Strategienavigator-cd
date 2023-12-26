@@ -31,6 +31,7 @@ jobs:
       - name: Install sshpass
         run: sudo apt install sshpass
       - name: Configure SSH
+        id: ssh
         run: |
           mkdir -p ~/.ssh/
           cat >>~/.ssh/config <<END
@@ -42,6 +43,11 @@ jobs:
         env:
           SSH_USER: ${{ vars.SSH_USER_NAME }}
           SSH_HOST: ${{ vars.SSH_HOST }}
+      - name: Check for Error Marker
+        env:
+          SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
+        run:
+          sshpass -e ssh prod "test -f deploy-error"
       - name: Load versions
         uses: aarcangeli/load-dotenv@v1.0.0
         with:
@@ -103,5 +109,11 @@ jobs:
           PUBLIC_HTML: ${{ vars.PUBLIC_HTML_PATH }}
         run:
           sshpass -e ssh prod "cd $PUBLIC_HTML && php artisan view:cache"
+      - name: Create Error Marker
+        if: failure() && steps.ssh.outcome == 'success'
+        env:
+          SSHPASS: ${{ secrets.SSH_USER_PASSWORD }}
+        run:
+          sshpass -e ssh prod "touch deploy-error"
 
 
