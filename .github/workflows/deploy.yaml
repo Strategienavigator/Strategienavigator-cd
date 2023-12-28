@@ -57,13 +57,13 @@ jobs:
       - name: clone backend # only used to check if the given ref exists.
         uses: actions/checkout@v4.1.1
         with:
-          repository: ${{ vars.BACKEND_REPO }}
+          repository: ${{ env.BACKEND_REPO }}
           ref: ${{ env.BACKEND_HASH}}
           path: 'backend'
       - name: clone frontend
         uses: actions/checkout@v4.1.1
         with:
-          repository: ${{ vars.FRONTEND_REPO }}
+          repository: ${{ env.FRONTEND_REPO }}
           ref: ${{ env.FRONTEND_HASH}}
           path: 'frontend'
       - name: Setup Node.js environment
