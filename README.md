@@ -19,6 +19,8 @@ Falls der Workflow beim deployen fehlschlägt, wird auf dem Server eine Datei er
 
 Um nachfolgende Jobs wieder möglich zu machen, muss die Datei `deploy-error` aus dem Heimverzeichnis gelöscht werden. 
 
+Falls die gewünscht, kann anschließend der Workflow Job neugestartet werden.
+
 ## Workflow Dokumentation
 
 Der Workflow besteht aus 2 Jobs `generate-matrix` und `deploy`.
