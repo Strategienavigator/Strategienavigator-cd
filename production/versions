@@ -2,4 +2,4 @@ FRONTEND_REPO="ricom/Strategienavigator-frontend"
 FRONTEND_HASH="1e4f1654a9ad82797eca407213fc434b0293009d"
 # BACKEND_REPO must be the same, which is cloned on the server, a different repo would only result in wrong checks, not a repo change on the server.
 BACKEND_REPO="ricom/Strategienavigator-backend"
-BACKEND_HASH="e9b8cd71783836b08c879df24a12f01a898fc692"
+BACKEND_HASH="8580b9547a1f5a5c844622c02880aa7c715259c4"
