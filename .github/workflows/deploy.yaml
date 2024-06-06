@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Frontend Zip Name
         id: frontendZip
-        run: echo "name::frontend-build-$(date +'%Y-%m-%d-%s').zip" >> $GITHUB_OUTPUT
+        run: echo "name=frontend-build-$(date +'%Y-%m-%d-%s').zip" >> $GITHUB_OUTPUT
       - name: Repo Checkout
         uses: actions/checkout@v4
       - name: Install sshpass
