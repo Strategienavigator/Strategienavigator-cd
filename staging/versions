@@ -2,4 +2,4 @@ FRONTEND_REPO="Strategienavigator/Strategienavigator-frontend"
 FRONTEND_HASH="cd37070c49bd0bd608d68001da5cd4f3ba4a928e"
 # BACKEND_REPO must be the same, which is cloned on the server, a different repo would only result in wrong checks, not a repo change on the server.
 BACKEND_REPO="Strategienavigator/Strategienavigator-backend"
-BACKEND_HASH="408107f4e534dfe3c42db57e53c07f9380340e94"
+BACKEND_HASH="17a7cfeefa13fa51ba00be7fb21d990ba904cb09"
